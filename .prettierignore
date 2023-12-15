@@ -1,0 +1,15 @@
+*.svg
+*.toml
+*.yaml
+*.lock
+*.log
+.dockerignore
+.DS_Store
+.eslintignore
+.eslintcache
+.prettierrc.json
+node_modules
+dist
+.gitignore
+.prettierignore
+LICENSE
