@@ -4,20 +4,21 @@
   "version": "1.0.0",
   "packageManager": "pnpm@8.6.10",
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.js": "eslint --cache",
-    "*.{js,json}": "prettier --ignore-unknown --write"
+    "*.{js,json}": "prettier --write"
   },
   "engines": {
     "node": ">=18.12.0"
   },
   "devDependencies": {
     "lint-staged": "^15.2.0",
+    "prettier": "^3.1.1",
     "simple-git-hooks": "^2.9.0"
   }
 }
