@@ -12,7 +12,6 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.js": "eslint --cache",
     "*.{js,json}": "prettier --write"
   },
   "engines": {

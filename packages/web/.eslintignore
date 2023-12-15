@@ -1,4 +1,4 @@
-*//node_modules
+node_modules/
 vite.config.js
-/public
-/.husky
+public/
+dist/
