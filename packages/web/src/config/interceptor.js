@@ -29,7 +29,7 @@ const handleTokenError = async (config, errorMsg) => {
       try {
         const res = await refreshAccessToken({ token: refreshToken });
         saveToken(res);
-        retryQueue.splice(0).forEach((cb) => cb());
+        retryQueue.splice(0).forEach(cb => cb());
         // 阻塞触发refresh的请求直至再次请求
         return axios(config);
       } catch (e) {
@@ -40,7 +40,7 @@ const handleTokenError = async (config, errorMsg) => {
       }
     } else {
       // 缓存并阻塞refresh期间的请求
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         retryQueue.push(() => resolve(axios(config)));
       });
     }
@@ -52,12 +52,12 @@ const handleTokenError = async (config, errorMsg) => {
 
 axios.defaults.baseURL = `${import.meta.env.VITE_HTTP_API_URL}/api`;
 
-axios.defaults.paramsSerializer = (params) => {
+axios.defaults.paramsSerializer = params => {
   return qs.stringify(params, { arrayFormat: 'repeat' });
 };
 
 axios.interceptors.request.use(
-  (config) => {
+  config => {
     const token = getAccessToken();
     if (token) {
       if (!config.headers) {
@@ -67,13 +67,13 @@ axios.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
 axios.interceptors.response.use(
-  (response) => {
+  response => {
     const { code, message, data } = response.data;
     if (code !== 20000) {
       if (code === 50000) {
@@ -84,7 +84,7 @@ axios.interceptors.response.use(
     }
     return data;
   },
-  (error) => {
+  error => {
     Message.error({
       content: error.message || 'Request Error',
       duration: 5 * 1000,

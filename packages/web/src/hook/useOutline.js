@@ -31,7 +31,7 @@ export default function useOutline(config) {
     const outlineElement = outline.value;
     if (!outlineElement || !outlineList.length) return;
 
-    const elements = outlineList.map((item) => {
+    const elements = outlineList.map(item => {
       const { id, level, text } = item;
       const pdClass = level ? `pl-${level}` : '';
       const className = `li ${pdClass}`.trim();
@@ -45,7 +45,7 @@ export default function useOutline(config) {
     `;
     outlineElement.innerHTML = html;
   };
-  const handleOutlineClick = (event) => {
+  const handleOutlineClick = event => {
     const target = event.target;
     const tagName = String(target.tagName).toLowerCase();
     const dataSet = target.dataset;
@@ -71,7 +71,7 @@ export default function useOutline(config) {
 
   watch(
     () => scrollVisible.value,
-    (value) => {
+    value => {
       if (!value) return;
       removeListener();
       bindClickEvent();
@@ -102,7 +102,7 @@ export default function useOutline(config) {
           }
         });
 
-        toc.value = headingList.map((item) => {
+        toc.value = headingList.map(item => {
           return { ...item, level: item.level - minLevel };
         });
       },

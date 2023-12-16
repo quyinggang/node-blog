@@ -8,8 +8,8 @@ const useCommonStore = defineStore('common', {
     };
   },
   getters: {
-    loginVisible: (state) => state.loginModelVisible,
-    refetchMessageCount: (state) => state.refetchUserMessageCount,
+    loginVisible: state => state.loginModelVisible,
+    refetchMessageCount: state => state.refetchUserMessageCount,
   },
   actions: {
     setLoginVisible(visible) {

@@ -3,7 +3,7 @@ import { getAccessToken } from '@/utils/auth';
 import { useCommonStore } from '@/store';
 import { updateArticleReadCount } from '@/api/article';
 
-router.beforeEach((to) => {
+router.beforeEach(to => {
   const { requireAuth } = to.meta;
   const token = getAccessToken();
   if (requireAuth) {

@@ -9,7 +9,7 @@ export const getRefreshToken = () => {
   return localStorage.getItem(REFRESH_TOKEN_KEY);
 };
 
-export const saveToken = (value) => {
+export const saveToken = value => {
   const { accessToken, refreshToken } = value;
   accessToken && localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
   refreshToken && localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);

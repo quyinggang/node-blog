@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
 const MessageSchema = new mongoose.Schema({
-  event: { type: String, required: true },
+  type: { type: Number, required: true },
   sender: { type: ObjectId, ref: 'User', required: true },
   receiver: { type: ObjectId, ref: 'User', required: true },
   content: { type: String },

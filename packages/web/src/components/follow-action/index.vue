@@ -58,7 +58,8 @@ const handleChat = () => {
     commonStore.setLoginVisible(true);
     return;
   }
-  router.push({ name: 'notification', query: { tab: 3 } });
+  const userId = props.userId;
+  router.push({ name: 'notification', query: { tab: 3, im: userId } });
 };
 const handleFollow = async () => {
   if (!userStore.isLoggedIn) {

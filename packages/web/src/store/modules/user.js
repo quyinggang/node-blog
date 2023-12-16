@@ -8,8 +8,8 @@ const useUserStore = defineStore('user', {
     };
   },
   getters: {
-    isLoggedIn: (state) => state.loggedIn,
-    userInfo: (state) => state.userDetail,
+    isLoggedIn: state => state.loggedIn,
+    userInfo: state => state.userDetail,
   },
   actions: {
     setLoggedIn(value) {

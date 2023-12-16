@@ -13,14 +13,14 @@
         <follow-message :user-id="userInfo.uid"></follow-message>
       </a-tab-pane>
       <a-tab-pane key="3" title="私信">
-        <chat-message></chat-message>
+        <chat-message :im="imUserId"></chat-message>
       </a-tab-pane>
     </a-tabs>
   </div>
 </template>
 
 <script setup>
-import { computed, onBeforeMount, ref } from 'vue';
+import { computed, onBeforeMount, ref, toRef } from 'vue';
 import { useRoute } from 'vue-router';
 import { useUserStore } from '@/store';
 import CommentMessage from './components/comment.vue';
@@ -35,6 +35,7 @@ const initialTab = computed(() => {
   const tab = Number(route.query.tab);
   return Math.min(3, Math.max(1, tab)).toString();
 });
+const imUserId = toRef(() => route.query.im || '');
 
 onBeforeMount(() => {
   activeKey.value = initialTab.value;

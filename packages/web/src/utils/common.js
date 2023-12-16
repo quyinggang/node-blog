@@ -1,3 +1,16 @@
+export const socketTypeAlias = {
+  response: {
+    connected: 0,
+    message: 1,
+  },
+  request: {
+    message: -1,
+    auth: 0,
+    connection: 1,
+    chat: 2,
+  },
+};
+
 export const getCurrentTimeTitle = () => {
   const current = new Date();
   const hour = current.getHours();
@@ -11,4 +24,14 @@ export const getCurrentTimeTitle = () => {
   if (hour >= 23 || hour < 1) return '午夜';
 };
 
-export const checkHtmlElement = (element) => element instanceof HTMLElement;
+export const checkHtmlElement = element => element instanceof HTMLElement;
+
+export const jsonParse = data => {
+  let result = null;
+  try {
+    result = JSON.parse(data);
+  } catch (e) {
+    console.error(e);
+  }
+  return result;
+};

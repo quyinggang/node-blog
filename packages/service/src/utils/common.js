@@ -51,22 +51,47 @@ export const hmacHash = value => {
     .digest('hex');
 };
 
+const getValueMap = map => {
+  const valueMap = {};
+  for (const [key, value] of Object.entries(map)) {
+    valueMap[value] = key;
+  }
+  return valueMap;
+};
 const notificationAlias = {
   comment: 0,
   reply: 1,
   follow: 2,
 };
-const getValueMap = () => {
-  const valueMap = {};
-  for (const [key, value] of Object.entries(notificationAlias)) {
-    valueMap[value] = key;
-  }
-  return valueMap;
-};
-const valueMap = getValueMap();
 export const notificationMap = {
   alias: notificationAlias,
-  valueMap,
+  valueMap: getValueMap(notificationAlias),
   keys: Object.keys(notificationAlias),
   values: Object.values(notificationAlias),
+};
+
+export const socketTypeAlias = {
+  response: {
+    connected: 0,
+    message: 1,
+  },
+  request: {
+    auth: 0,
+    connection: 1,
+    chat: 2,
+  },
+};
+
+export const validateWebSocketMessage = message => {
+  if (!message) return false;
+  const isLegalType = Object.values(socketTypeAlias.request).includes(
+    message.type
+  );
+  const isLegalValue = Object.keys(message.value).length > 0;
+  return isLegalType && isLegalValue;
+};
+
+export const getSocketClientKey = data => {
+  const { url, uid } = data;
+  return `${url}@${uid}`;
 };

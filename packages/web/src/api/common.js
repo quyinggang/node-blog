@@ -2,7 +2,7 @@ import request from '@/config/request';
 
 const prefix = '/common';
 
-export const uploadFile = (data) =>
+export const uploadFile = data =>
   request({
     prefix,
     method: 'post',
@@ -12,5 +12,5 @@ export const uploadFile = (data) =>
   });
 
 // 获取未读信息总数
-export const getUnreadInformationCount = (params) =>
+export const getUnreadInformationCount = params =>
   request({ prefix, method: 'get', url: '/information/count', params });

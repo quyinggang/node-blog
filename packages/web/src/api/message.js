@@ -7,7 +7,7 @@ export const getMessageList = (id, params) =>
   request({ prefix, method: 'get', url: `/${id}`, params });
 
 // 已读信息
-export const updateMessageRead = (data) =>
+export const updateMessageRead = data =>
   request({ prefix, method: 'put', url: '/read', data });
 
 // Chat WebSocket

@@ -1,7 +1,12 @@
 import { WebSocketServer } from 'ws';
 import compose from 'koa-compose';
 import logger from '../config/logger.js';
-import { verifyToken } from './common.js';
+import {
+  verifyToken,
+  socketTypeAlias,
+  validateWebSocketMessage,
+  getSocketClientKey,
+} from './common.js';
 
 const onError = err => logger.error(err.stack || err.toString() || err);
 
@@ -41,42 +46,43 @@ class KoaWebSocket {
     const wss = new WebSocketServer({ noServer: true, clientTracking: false });
     wss.on('connection', (socket, req) => {
       let clientKey = null;
-      let isReturn = false;
       const url = req.url;
-      const checkMessageAndAuth = async message => {
-        try {
-          const data = JSON.parse(message);
-          if (![0, 1].includes(message.type) || !message.value) {
-            throw new Error('非法的WebSocket业务信息格式');
-          }
-          const isAuthMessage = data.type === 0;
-          if (isAuthMessage) {
-            const { uid } = await verifyToken(data.value);
-            if (!uid) {
-              throw new Error('WebSocket鉴权失败');
-            }
-            clientKey = url + uid;
-            clientMap.add(clientKey, socket);
-          }
-          isReturn = isAuthMessage;
-        } catch (e) {
-          socket.close();
-          onError(e);
-          isReturn = true;
-        }
-        return isReturn;
-      };
-
       socket.on('error', onError);
       socket.on('close', () => clientKey && clientMap.remove(clientKey));
-      const fnMiddleware = compose(middleware);
-      const ctx = app.createContext(req, {});
-      ctx.webSocket = socket;
-      socket.on('message', async message => {
-        // 连接成功后需要进行权限校验，此处逻辑应该在握手阶段处理，但是通过子协议传递token会导致报错
-        const needReturn = await checkMessageAndAuth(message.toString());
-        if (needReturn) return;
-
+      const authPromise = new Promise((resolve, reject) => {
+        socket.on('message', async message => {
+          // 连接成功后需要进行权限校验，此处逻辑应该在握手阶段处理，但是通过子协议传递token会导致报错
+          try {
+            const data = JSON.parse(message);
+            if (!validateWebSocketMessage(data)) {
+              throw new Error('非法的WebSocket业务信息格式');
+            }
+            const isAuthMessage = data.type === socketTypeAlias.request.auth;
+            if (isAuthMessage) {
+              const { uid } = await verifyToken(data.value);
+              if (!uid) {
+                throw new Error('WebSocket业务鉴权失败');
+              }
+              clientKey = getSocketClientKey({ url, uid });
+              clientMap.add(clientKey, socket);
+              socket.send(
+                JSON.stringify({
+                  type: socketTypeAlias.response.connected,
+                  value: 'connected',
+                })
+              );
+            }
+            resolve(isAuthMessage);
+          } catch (e) {
+            reject(e);
+          }
+        });
+      });
+      authPromise.then(isAuth => {
+        if (!isAuth) return;
+        const fnMiddleware = compose(middleware);
+        const ctx = app.createContext(req, {});
+        ctx.webSocket = socket;
         // 权限校验过后再处理各路由逻辑
         fnMiddleware(ctx).catch(onError);
       });

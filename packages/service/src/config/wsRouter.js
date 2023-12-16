@@ -5,6 +5,6 @@ const router = new Router({ prefix: '/ws' });
 
 router.get('/chat', MessageProxy.chatByWebSocket);
 
-router.get('/users', MessageProxy.getMessageUserListByWebSocket);
+router.get('/users', MessageProxy.userConnectByWebSocket);
 
 export default router;

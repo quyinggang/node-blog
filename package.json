@@ -5,6 +5,7 @@
   "packageManager": "pnpm@8.6.10",
   "scripts": {
     "dev": "pnpm -r exec pnpm dev",
+    "fix": "pnpm -r exec pnpm fix",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "simple-git-hooks"
   },
@@ -12,7 +13,7 @@
     "pre-commit": "pnpm lint-staged"
   },
   "lint-staged": {
-    "*.{js,json}": "prettier --write"
+    "*.{js,json}": "prettier --write ."
   },
   "engines": {
     "node": ">=18.12.0"
@@ -20,9 +21,9 @@
   "devDependencies": {
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-prettier": "^4.2.1",
     "lint-staged": "^15.2.0",
-    "prettier": "^3.1.1",
+    "prettier": "^2.8.8",
     "simple-git-hooks": "^2.9.0"
   },
   "dependencies": {
