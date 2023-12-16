@@ -8,10 +8,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon bin/www",
-    "fix": "eslint . --fix"
+    "fix": "eslint --fix"
   },
   "lint-staged": {
-    "*.js": "eslint"
+    "*.js": "eslint --cache"
   },
   "engines": {
     "node": ">=18.12.0"

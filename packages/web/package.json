@@ -6,12 +6,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "fix": "eslint . --fix"
+    "fix": "eslint --fix"
   },
   "lint-staged": {
     "*.{css,less,vue}": "stylelint",
-    "*.{js,vue}": "eslint",
-    "*.{vue,less,css}": "prettier --write ."
+    "*.{js,vue}": "eslint --cache",
+    "*.{vue,less,css}": "prettier --write"
   },
   "engines": {
     "node": ">=18.12.0"
