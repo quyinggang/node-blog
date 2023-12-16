@@ -59,7 +59,7 @@ const getCommentsByTopicId = async data => {
         replies.push(reply);
       }
       return Object.assign({}, item.toJSON(), { replies });
-    }),
+    })
   );
   return result;
 };

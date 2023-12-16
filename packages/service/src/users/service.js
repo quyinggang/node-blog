@@ -21,11 +21,11 @@ import logger from '../config/logger.js';
 const createNewToken = userId => {
   const accessToken = signToken(
     { uid: userId, createTime: Date.now() },
-    config.token.accessTokenExpire,
+    config.token.accessTokenExpire
   );
   const refreshToken = signToken(
     { uid: userId, createTime: Date.now() },
-    config.token.refreshTokenExpire,
+    config.token.refreshTokenExpire
   );
   return {
     accessToken,
@@ -136,7 +136,7 @@ const getFollowerList = async data => {
     list.map(async id => {
       const result = await model.findById(id).exec();
       return { _id: result._id.toString(), name: result.name };
-    }),
+    })
   );
 };
 
@@ -153,7 +153,7 @@ const getFollowingList = async data => {
     list.map(async id => {
       const result = await model.findById(id).exec();
       return { _id: result._id.toString(), name: result.name };
-    }),
+    })
   );
 };
 

@@ -16,7 +16,7 @@ const customFormat = format.printf(({ level, message, timestamp }) => {
 const logger = createLogger({
   format: format.combine(
     format.timestamp({ format: () => new Date().toLocaleString() }),
-    customFormat,
+    customFormat
   ),
   transports: [
     new transports.Console({

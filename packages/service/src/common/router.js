@@ -17,13 +17,13 @@ router.post(
       uploadDir: pathTool.getStaticPath(),
     },
   }),
-  controller.uploadFile,
+  controller.uploadFile
 );
 
 router.get(
   '/information/count',
   validate(scheme.count),
-  controller.getUnreadCount,
+  controller.getUnreadCount
 );
 
 export default router;

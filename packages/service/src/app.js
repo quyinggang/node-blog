@@ -29,7 +29,7 @@ app.use(cors());
 app.use(requestLog());
 // token校验
 app.use(
-  jwt({ secret: config.token.secret }).unless({ path: config.api.whiteRecord }),
+  jwt({ secret: config.token.secret }).unless({ path: config.api.whiteRecord })
 );
 // 校验注销token
 app.use(redisToken().unless({ path: config.api.whiteRecord }));
@@ -54,8 +54,8 @@ app.use(
           res.setHeader('Content-Type', 'image/webp');
         }
       },
-    }),
-  ),
+    })
+  )
 );
 
 // 全局错误处理

@@ -11,12 +11,12 @@ router.get('/public/:id', validate(scheme.article), controller.getArticle);
 router.get(
   '/public/user/:id',
   validate(scheme.userArticle),
-  controller.getUserArticles,
+  controller.getUserArticles
 );
 router.put(
   '/public/read/:id',
   validate(scheme.readArticle),
-  controller.readArticle,
+  controller.readArticle
 );
 router.delete('/:id', validate(scheme.article), controller.deleteArticle);
 router.post('/new', validate(scheme.publish), controller.publish);

@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
-      '@arco-design/icon-vue': '@arco-design/web-vue/es/icon'
+      '@arco-design/icon-vue': '@arco-design/web-vue/es/icon',
     },
   },
   server: {
@@ -16,8 +16,8 @@ export default defineConfig({
     proxy: {
       '/static': {
         target: 'http://127.0.0.1:8080',
-        changeOrigin: true
+        changeOrigin: true,
       },
-    }
-  }
+    },
+  },
 });

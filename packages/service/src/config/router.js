@@ -19,7 +19,7 @@ router.use('/comments', commentRouter.routes(), commentRouter.allowedMethods());
 router.use(
   '/notifications',
   notificationRouter.routes(),
-  notificationRouter.allowedMethods(),
+  notificationRouter.allowedMethods()
 );
 
 // 聊天通信相关API

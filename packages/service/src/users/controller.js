@@ -7,7 +7,7 @@ import {
 
 const login = async ctx => {
   const { accessToken, refreshToken, user } = await service.login(
-    ctx.request.body,
+    ctx.request.body
   );
   ctx.body = {
     ...successHttpBody,
