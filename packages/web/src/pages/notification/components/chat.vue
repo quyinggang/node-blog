@@ -1,6 +1,6 @@
 <template>
   <div class="chat-container">
-    <div class="left">
+    <div class="aside">
       <ul class="ul">
         <li
           v-for="user of userList"
@@ -25,11 +25,14 @@
         </li>
       </ul>
     </div>
-    <div class="right">
+    <div class="content">
       <div v-if="chatPanelVisible" class="chat-box">
         <ul class="ul">
           <li v-for="message of chatMessages" :key="message._id">
-            <chat-message :message="message"></chat-message>
+            <chat-message
+              :user-id="userInfo.uid"
+              :message="message"
+            ></chat-message>
           </li>
         </ul>
         <div class="editor">
@@ -83,27 +86,28 @@ const chatVisible = computed(
 const createWebSocket = (url, messageHandler) => {
   const socket = new WebSocket(url);
   socket.addEventListener('message', event => {
-    typeof messageHandler === 'function' && messageHandler(event.data);
+    const messageInfo = jsonParse(event.data);
+    if (messageInfo && typeof messageHandler === 'function') {
+      messageHandler(messageInfo);
+    }
   });
   socket.addEventListener('open', () => {
     // 权限校验
-    const message = {
+    const message = JSON.stringify({
       type: socketTypeAlias.request.auth,
       value: getRefreshToken(),
-    };
-    socket.send(JSON.stringify(message));
+    });
+    socket.send(message);
   });
   return socket;
 };
 
 const handleUserListSocketMessage = data => {
-  const info = jsonParse(data);
-  if (!info) return;
-  if (info.type === socketTypeAlias.response.connected) {
+  if (data.type === socketTypeAlias.response.connected) {
     userSocketAuthSuccess.value = true;
     return;
   }
-  userList.value = info.value || [];
+  userList.value = data.value || [];
 };
 const userSocket = createWebSocket(
   userWebSocketUrl,
@@ -115,13 +119,13 @@ watch(
   () => chatVisible.value,
   value => {
     if (!value) return;
-    const message = {
+    const message = JSON.stringify({
       type: socketTypeAlias.request.message,
       value: {
         sender: userInfo.value.uid,
       },
-    };
-    userSocket.send(JSON.stringify(message));
+    });
+    userSocket.send(message);
   }
 );
 
@@ -129,23 +133,37 @@ watch(
   () => props.im && chatVisible.value,
   value => {
     if (!value) return;
-    const message = {
+    const message = JSON.stringify({
       type: socketTypeAlias.request.connection,
       value: {
         sender: userInfo.value.uid,
         receiver: props.im,
       },
-    };
-    console.log(message);
-    userSocket.send(JSON.stringify(message));
+    });
+    userSocket.send(message);
   }
 );
 
 let chatSocket = null;
+const getTargetUserAvatar = sender => {
+  const loginUser = userInfo.value;
+  const chatTarget = chatUser.value;
+  return sender === loginUser.uid ? loginUser : chatTarget;
+};
 const handleWebSocketMessage = data => {
-  console.log(data);
+  if (data.type === socketTypeAlias.response.connected) return;
+  const { _id, sender, content } = data.value;
+  const targetUser = getTargetUserAvatar(sender);
+
+  chatMessages.value.push({
+    _id,
+    avatar: targetUser.avatar,
+    sender,
+    content,
+  });
 };
 const handleUserSelect = user => {
+  chatMessages.value = [];
   chatUser.value = user;
   if (!chatSocket) {
     chatSocket = createWebSocket(chatWebSocketUrl, handleWebSocketMessage);
@@ -154,26 +172,30 @@ const handleUserSelect = user => {
 
 const handleSubmit = event => {
   event.stopPropagation();
+  event.preventDefault();
   if (event.ctrlKey) {
     currentMessage.value += '\n';
     return;
   }
-  const sender = userInfo.value.uid;
-  const receiver = chatUser.value.uid;
-  if (!sender || !receiver || !chatSocket) return;
-  if (chatSocket.readyState !== WebSocket.OPEN) return;
-  const content = currentMessage.value;
+  let content = currentMessage.value;
+  if (content) {
+    content = content.replace(/\\n$/, '').trim();
+  }
   if (!content) return;
-  const message = {
-    type: socketTypeAlias.chat,
+  if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) return;
+  const sender = userInfo.value.uid;
+  const receiver = chatUser.value._id;
+  if (!sender || !receiver) return;
+  const message = JSON.stringify({
+    type: socketTypeAlias.request.chat,
     value: {
       sender,
       receiver,
       content,
     },
-  };
-  chatSocket.send(JSON.stringify(message));
+  });
   currentMessage.value = '';
+  chatSocket.send(message);
 };
 </script>
 
@@ -182,7 +204,7 @@ const handleSubmit = event => {
   display: flex;
   height: calc(100vh - 160px);
 
-  .left {
+  .aside {
     width: 200px;
     flex: none;
     border-right: 1px solid #e4e6eb;
@@ -225,7 +247,7 @@ const handleSubmit = event => {
     }
   }
 
-  .right {
+  .content {
     position: relative;
     flex: 1;
 
@@ -237,8 +259,9 @@ const handleSubmit = event => {
       .ul {
         list-style: none;
         margin: 0;
-        padding: 0;
+        padding: 0 10px;
         flex: 1;
+        background-color: #ebebeb;
       }
 
       .editor {

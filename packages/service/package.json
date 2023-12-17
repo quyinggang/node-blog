@@ -11,7 +11,7 @@
     "fix": "eslint --fix"
   },
   "lint-staged": {
-    "*.js": "eslint --cache"
+    "*.js": "eslint --cache --fix"
   },
   "engines": {
     "node": ">=18.12.0"

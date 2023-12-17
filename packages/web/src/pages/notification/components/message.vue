@@ -1,14 +1,16 @@
 <template>
   <div :class="messageClass">
-    <a-avatar class="user" :size="40">
+    <a-avatar class="user" :size="36">
       <img alt="avatar" :src="message.avatar" loading="lazy" />
     </a-avatar>
-    <p class="content">{{ message.content }}</p>
+    <div class="content">
+      {{ message.content }}
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { toRef, computed } from 'vue';
 
 const props = defineProps({
   userId: {
@@ -23,18 +25,12 @@ const props = defineProps({
   },
 });
 
-const message = computed(() => {
-  const { sender, content, create_at } = props.message || {};
-  return {
-    avatar: sender ? sender.avatar : '#',
-    content: content || '',
-    time: create_at || '',
-  };
-});
+const message = toRef(() => props.message || {});
+
 const messageClass = computed(() => {
   const userId = props.userId;
-  const { sender } = props.message || {};
-  const isUserSelf = sender && userId ? sender._id === userId : false;
+  const { sender } = message.value;
+  const isUserSelf = sender && userId ? sender === userId : false;
   const defaultClass = 'message-container';
   return isUserSelf ? [defaultClass, 'right'] : [defaultClass, 'left'];
 });
@@ -43,6 +39,32 @@ const messageClass = computed(() => {
 <style lang="less" scoped>
 .message-container {
   display: flex;
+  align-items: flex-start;
+  margin: 10px 0;
+
+  .user {
+    flex: none;
+  }
+
+  .content {
+    position: relative;
+    max-width: 40%;
+    line-height: 1.5;
+    padding: 7px;
+    border-radius: 4px;
+    color: #4e5969;
+    font-size: 14px;
+
+    &::before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 12px;
+      width: 8px;
+      height: 8px;
+      transform: rotate(45deg);
+    }
+  }
 }
 
 .left {
@@ -50,17 +72,11 @@ const messageClass = computed(() => {
 
   .content {
     margin-left: 10px;
+    background-color: #fff;
 
     &::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 10px;
-      left: 0;
-      width: 8px;
-      height: 8px;
-      border: 1px solid #e5e6eb;
-      transform: rotate(45deg);
+      left: -4px;
+      background-color: #fff;
     }
   }
 }
@@ -70,17 +86,11 @@ const messageClass = computed(() => {
 
   .content {
     margin-right: 10px;
+    background-color: #a7ea74;
 
     &::before {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 10px;
-      right: 0;
-      width: 8px;
-      height: 8px;
-      border: 1px solid #e5e6eb;
-      transform: rotate(45deg);
+      right: -4px;
+      background-color: #a7ea74;
     }
   }
 }

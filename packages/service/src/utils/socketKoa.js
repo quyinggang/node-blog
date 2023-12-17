@@ -22,6 +22,10 @@ class SocketConnectionPool {
   remove(key) {
     this.clients.delete(key);
   }
+
+  get(key) {
+    return this.clients.get(key);
+  }
 }
 
 class KoaWebSocket {
@@ -34,6 +38,10 @@ class KoaWebSocket {
   proxy(app) {
     this.app = app;
     return app;
+  }
+
+  getClientMap() {
+    return this.clientMap;
   }
 
   listen(server) {

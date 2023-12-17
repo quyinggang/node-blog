@@ -6,6 +6,8 @@ mongoose
   .connect(config.db.mongodb, {
     maxPoolSize: 6,
     serverSelectionTimeoutMS: 5000,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
   .then(() => logger.info('mongodb connected'))
   .catch(err => logger.error('[mongodb]', err));

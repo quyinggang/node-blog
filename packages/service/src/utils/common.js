@@ -76,6 +76,7 @@ export const socketTypeAlias = {
     message: 1,
   },
   request: {
+    message: -1,
     auth: 0,
     connection: 1,
     chat: 2,

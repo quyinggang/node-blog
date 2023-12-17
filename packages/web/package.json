@@ -10,7 +10,7 @@
   },
   "lint-staged": {
     "*.{css,less,vue}": "stylelint",
-    "*.{js,vue}": "eslint --cache",
+    "*.{js,vue}": "eslint --cache --fix",
     "*.{vue,less,css}": "prettier --write"
   },
   "engines": {
