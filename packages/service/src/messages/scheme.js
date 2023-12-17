@@ -33,8 +33,13 @@ const list = {
 
 const read = {
   body: {
-    messages: value => {
-      if (!Array.isArray(value)) return '消息ID列表类型错误';
+    sender: value => {
+      if (isEmpty(value)) return '用户ID不能为空';
+      if (!validator.isMongoId(value)) return '非法的用户ID';
+    },
+    receiver: value => {
+      if (isEmpty(value)) return '用户ID不能为空';
+      if (!validator.isMongoId(value)) return '非法的用户ID';
     },
   },
 };

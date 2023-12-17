@@ -1,9 +1,20 @@
 import model from './model.js';
 import { socketTypeAlias } from '../utils/common.js';
 
-const updateReadStatus = async data => {
-  const { messages } = data;
-  if (!Array.isArray(messages) || messages.length === 0) return;
+const updateReadStatusByUserId = async data => {
+  const { sender, receiver } = data;
+  const messages = await model
+    .find({
+      $and: [
+        {
+          $or: [
+            { sender, receiver },
+            { sender: receiver, receiver: sender },
+          ],
+        },
+      ],
+    })
+    .exec();
   const updates = messages.map(id => {
     return { updateOne: { filter: { _id: id }, update: { has_read: true } } };
   });
@@ -53,6 +64,6 @@ const deleteMessagesByUserId = async data => {
 
 export default {
   deleteMessagesByUserId,
-  updateReadStatus,
+  updateReadStatusByUserId,
   getMessagesByUserId,
 };

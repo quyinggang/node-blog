@@ -59,13 +59,10 @@ const chatByWebSocket = async ctx => {
     });
     webSocket.send(replyMessage);
 
-    console.log(value);
     // 查找对应的用户的socket连接是否存在，存在的话就直接发送消息
     const socketClientMap = socketKoa.getClientMap();
     const clientKey = getSocketClientKey({ url, uid: value.receiver });
     const targetClientSocket = socketClientMap.get(clientKey);
-    console.log(clientKey);
-    console.log(targetClientSocket);
     targetClientSocket && targetClientSocket.send(replyMessage);
   });
 };

@@ -24,13 +24,17 @@
 
 <script setup>
 import { ref, computed, toRef, watch } from 'vue';
-import { useUserStore } from '@/store';
 import { IconWechat } from '@arco-design/icon-vue';
 import chatMenu from './chat-menu.vue';
 import ChatEditor from './chat-editor.vue';
-import { userWebSocketUrl, deleteChatMessages } from '@/api/chat';
 import { socketTypeAlias } from '@/utils/common';
 import useAuthWebSocket from '@/hook/useAuthWebSocket';
+import { useUserStore, useCommonStore } from '@/store';
+import {
+  userWebSocketUrl,
+  deleteChatMessages,
+  updateChatReadStatus,
+} from '@/api/chat';
 
 const props = defineProps({
   im: {
@@ -39,6 +43,7 @@ const props = defineProps({
   },
 });
 
+const commonStore = useCommonStore();
 const userStore = useUserStore();
 const chatUser = ref({});
 const userList = ref([]);
@@ -65,20 +70,6 @@ const userSocket = useAuthWebSocket({
 });
 
 watch(
-  () => chatVisible.value,
-  value => {
-    if (!value) return;
-    const message = JSON.stringify({
-      type: socketTypeAlias.request.message,
-      value: {
-        sender: userInfo.value.uid,
-      },
-    });
-    userSocket.send(message);
-  }
-);
-
-watch(
   () => props.im && chatVisible.value,
   value => {
     if (!value) return;
@@ -93,8 +84,40 @@ watch(
   }
 );
 
+const fetchLatestUserList = () => {
+  if (!userSocket || userSocket.readyState !== WebSocket.OPEN) return;
+  const message = JSON.stringify({
+    type: socketTypeAlias.request.message,
+    value: {
+      sender: userInfo.value.uid,
+    },
+  });
+  userSocket.send(message);
+};
+watch(
+  () => chatVisible.value && (!userList.value || userList.value.length === 0),
+  value => {
+    if (!value) return;
+    fetchLatestUserList();
+  }
+);
+
+const updateChatAllMessageRead = async () => {
+  const chatTarget = chatUser.value;
+  const loginUser = userInfo.value;
+  if (!loginUser || !chatTarget) return;
+  if (!loginUser.uid || !chatTarget._id) return;
+  if (chatTarget.count <= 0) return;
+  await updateChatReadStatus({
+    sender: loginUser.uid,
+    receiver: chatTarget._id,
+  });
+  chatVisible.value && fetchLatestUserList();
+  commonStore.setRefetchMessageCount(true);
+};
 const handleChatUserSelect = user => {
   chatUser.value = user;
+  updateChatAllMessageRead();
 };
 const handleChatDelete = async data => {
   const { user, index } = data;

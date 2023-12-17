@@ -1,8 +1,8 @@
 import service from './service.js';
 import { successHttpBody } from '../utils/common.js';
 
-const updateReadStatus = async ctx => {
-  await service.updateReadStatus(ctx.request.body);
+const updateMessageReadStatus = async ctx => {
+  await service.updateReadStatusByUserId(ctx.request.body);
   ctx.body = { ...successHttpBody };
 };
 
@@ -16,4 +16,4 @@ const deleteMessages = async ctx => {
   ctx.body = { ...successHttpBody };
 };
 
-export default { updateReadStatus, getMessages, deleteMessages };
+export default { updateMessageReadStatus, getMessages, deleteMessages };
