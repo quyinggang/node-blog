@@ -5,7 +5,6 @@
   "packageManager": "pnpm@8.6.10",
   "scripts": {
     "dev": "pnpm -r exec pnpm dev",
-    "fix": "pnpm -r exec pnpm fix",
     "preinstall": "npx only-allow pnpm",
     "postinstall": "simple-git-hooks"
   },
