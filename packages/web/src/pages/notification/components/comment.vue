@@ -27,7 +27,10 @@
 
 <script setup>
 import { onBeforeMount, ref, watch } from 'vue';
-import { getMessageList, updateMessageRead } from '@/api/message';
+import {
+  getNotificationList,
+  updateNotificationReadStatus,
+} from '@/api/notification';
 import dayjs from 'dayjs';
 import { useCommonStore } from '@/store';
 
@@ -51,7 +54,7 @@ const putMessageReadStatus = () => {
     }
   }
   if (idList.length === 0) return;
-  updateMessageRead({ messages: idList });
+  updateNotificationReadStatus({ messages: idList });
   commonStore.setRefetchMessageCount(true);
 };
 
@@ -59,7 +62,7 @@ const fetchMessageList = async () => {
   const userId = props.userId;
   if (!userId) return;
   const params = { page: page.value, size: 10, type: [0, 1] };
-  const result = await getMessageList(userId, params);
+  const result = await getNotificationList(userId, params);
   total.value = result.total;
   list.value = (result.list || []).map(item => {
     return {

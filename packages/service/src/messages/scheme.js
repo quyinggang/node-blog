@@ -4,20 +4,15 @@ const isEmpty = value => {
   return value ? validator.isEmpty(value, { ignore_whitespace: true }) : true;
 };
 
-const count = {
+const list = {
   query: {
-    uid: value => {
+    sender: value => {
       if (isEmpty(value)) return '用户ID不能为空';
       if (!validator.isMongoId(value)) return '非法的用户ID';
     },
-  },
-};
-
-const list = {
-  query: {
-    topicId: value => {
-      if (isEmpty(value)) return '文章ID不能为空';
-      if (!validator.isMongoId(value)) return '非法的文章ID';
+    receiver: value => {
+      if (isEmpty(value)) return '用户ID不能为空';
+      if (!validator.isMongoId(value)) return '非法的用户ID';
     },
     page: value => {
       if (isEmpty(value)) return '页数不能为空';
@@ -44,4 +39,17 @@ const read = {
   },
 };
 
-export default { count, list, read };
+const deleteMessage = {
+  body: {
+    sender: value => {
+      if (isEmpty(value)) return '用户ID不能为空';
+      if (!validator.isMongoId(value)) return '非法的用户ID';
+    },
+    receiver: value => {
+      if (isEmpty(value)) return '用户ID不能为空';
+      if (!validator.isMongoId(value)) return '非法的用户ID';
+    },
+  },
+};
+
+export default { list, read, deleteMessage };
