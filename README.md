@@ -19,4 +19,4 @@
     - 登录验证：JWT、Redis Token 黑名单机制、双 Token 优化机制
     - 文章评论：实践文章以及评论系统的功能设计
     - 消息通知
-    - 聊天私信：应用 WebSocket
+    - 聊天私信：应用 WebSocket、Mongodb Change Stream机制
