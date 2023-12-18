@@ -4,6 +4,16 @@ import socketKoa from '../utils/socketKoa.js';
 import { BusinessError } from '../utils/errors.js';
 import { getSocketClientKey, socketTypeAlias } from '../utils/common.js';
 
+/**
+ * change stream需要mongodb数据库存在opLog，如果不存在需要配置复制集才能生效
+ *
+ * - 在mongodb配置文件mongo.conf配置，例如
+ *    replication:
+ *      replSetName: rs0   # yourReplicaSetName
+ *      oplogSizeMB: 1024  # 设置为1GB，根据需要调整大小
+ * - 重启mongodb服务后，使用mongo shell登录数据库，执行rs.initiate()命令初始化复制集，因为只有一个节点，这个节点会变成Primary
+ * - 使用命令rs.printReplicationInfo()查看opLog状态
+ */
 const changeStream = model.watch();
 
 const getUnreadCountByUserId = async id => {
@@ -132,6 +142,14 @@ const responseUserConnection = async data => {
 
 const userConnectByWebSocket = async ctx => {
   const webSocket = ctx.webSocket;
+
+  changeStream.on('change', changeData => {
+    if (changeData && changeData.operationType === 'insert') {
+      const sender = changeData.fullDocument.sender.toString();
+      sendUserListInfo(webSocket, sender);
+    }
+  });
+
   webSocket.on('message', async message => {
     const { type, value } = JSON.parse(message.toString());
     if (
@@ -148,10 +166,6 @@ const userConnectByWebSocket = async ctx => {
     } else {
       sendUserListInfo(webSocket, value.sender);
     }
-  });
-
-  changeStream.on('change', changeData => {
-    console.log(changeData);
   });
 };
 

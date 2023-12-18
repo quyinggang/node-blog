@@ -32,7 +32,7 @@ const route = useRoute();
 const activeKey = ref();
 const userInfo = computed(() => useStore.userInfo || {});
 const initialTab = computed(() => {
-  const tab = Number(route.query.tab);
+  const tab = Number(route.query.tab) || 1;
   return Math.min(3, Math.max(1, tab)).toString();
 });
 const imUserId = toRef(() => route.query.im || '');

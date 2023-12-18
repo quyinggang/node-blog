@@ -87,11 +87,18 @@ const handleSubmit = event => {
   if (content) {
     content = content.replace(/\\n$/, '').trim();
   }
+  currentMessage.value = '';
   if (!content) return;
-  if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) return;
+  if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+    currentMessage.value = content;
+    return;
+  }
   const sender = loginUser.value.uid;
   const receiver = chatUser.value._id;
-  if (!sender || !receiver) return;
+  if (!sender || !receiver) {
+    currentMessage.value = content;
+    return;
+  }
   const message = JSON.stringify({
     type: socketTypeAlias.request.chat,
     value: {
