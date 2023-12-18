@@ -2,9 +2,12 @@ import request from '@/config/request';
 
 const prefix = '/messages';
 
-// 获取信息
+// 获取聊天信息
 export const getChatMessagesList = params =>
   request({ prefix, method: 'get', url: `/record`, params });
+
+export const getChatMessageTotalNumber = params =>
+  request({ prefix, method: 'get', url: '/count', params });
 
 // 已读信息
 export const updateChatReadStatus = data =>

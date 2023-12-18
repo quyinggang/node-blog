@@ -16,4 +16,14 @@ const deleteMessages = async ctx => {
   ctx.body = { ...successHttpBody };
 };
 
-export default { updateMessageReadStatus, getMessages, deleteMessages };
+const getMessagesCount = async ctx => {
+  const data = await service.getMessagesCountByUserId(ctx.query);
+  ctx.body = { ...successHttpBody, data };
+};
+
+export default {
+  updateMessageReadStatus,
+  getMessages,
+  deleteMessages,
+  getMessagesCount,
+};

@@ -1,7 +1,11 @@
 <template>
   <div class="chat-box">
-    <ul class="ul">
-      <li v-for="message of chatMessages" :key="message._id">
+    <ul ref="scrollElement" class="ul">
+      <li
+        v-for="message of chatMessages"
+        :key="message._id"
+        :class="{ anchor: endMessageId === message._id }"
+      >
         <chat-message
           :user-id="loginUser.uid"
           :message="message"
@@ -21,11 +25,16 @@
 </template>
 
 <script setup>
-import { ref, toRef, watch } from 'vue';
-import ChatMessage from './message.vue';
+import { computed, onMounted, ref, toRef, watch } from 'vue';
+import ChatMessage from './chat-message.vue';
 import useAuthWebSocket from '@/hook/useAuthWebSocket';
-import { chatWebSocketUrl } from '@/api/chat';
+import {
+  chatWebSocketUrl,
+  getChatMessagesList,
+  getChatMessageTotalNumber,
+} from '@/api/chat';
 import { socketTypeAlias } from '@/utils/common';
+import useScroll from '@/hook/useScroll';
 
 const props = defineProps({
   chatUser: {
@@ -42,16 +51,28 @@ const props = defineProps({
   },
 });
 
+const scrollElement = ref();
 const currentMessage = ref('');
 const chatMessages = ref([]);
+const endMessageId = ref();
+const page = ref(1);
 const chatUser = toRef(() => props.chatUser || {});
 const loginUser = toRef(() => props.loginUser || {});
+const recordFetchVisible = computed(() => {
+  const chatTarget = chatUser.value;
+  const loginUserInfo = loginUser.value;
+  return chatTarget && loginUserInfo
+    ? chatTarget._id && loginUserInfo.uid
+    : false;
+});
 
 watch(
   () => chatUser.value,
   () => {
     chatMessages.value = [];
-  }
+    page.value = 1;
+  },
+  { immediate: true }
 );
 
 const getTargetUserAvatar = sender => {
@@ -59,11 +80,81 @@ const getTargetUserAvatar = sender => {
   const chatTarget = chatUser.value;
   return sender === loginUserInfo.uid ? loginUserInfo : chatTarget;
 };
+const fetchHistoryChatRecordByPage = async (size = 10) => {
+  if (!recordFetchVisible.value) return;
+
+  const params = {
+    sender: loginUser.value.uid,
+    receiver: chatUser.value._id,
+    page: page.value,
+    size,
+  };
+  const result = await getChatMessagesList(params);
+  const list = result.list || [];
+  const record = list.map(item => {
+    const user = getTargetUserAvatar(item.sender);
+    return {
+      _id: item._id,
+      content: item.content,
+      sender: item.sender,
+      avatar: user.avatar,
+    };
+  });
+  chatMessages.value.push(...record);
+};
+const fetchHistoryRecordTotal = async () => {
+  if (!recordFetchVisible.value) return;
+
+  const params = {
+    sender: loginUser.value.uid,
+    receiver: chatUser.value._id,
+  };
+  const result = await getChatMessageTotalNumber(params);
+  fetchHistoryChatRecordByPage(result);
+};
+
+watch(
+  () => recordFetchVisible.value,
+  value => {
+    if (!value) return;
+    fetchHistoryRecordTotal();
+  },
+  { immediate: true }
+);
+
+watch(
+  () => Array.isArray(chatMessages.value) && chatMessages.value.length,
+  value => {
+    if (!value) return;
+    const messages = chatMessages.value;
+    endMessageId.value = messages[messages.length - 1]._id;
+  },
+  { immediate: true }
+);
+
+watch(
+  () => endMessageId.value,
+  value => {
+    if (!value) return;
+    const element = document.querySelector('.anchor');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  },
+  { flush: 'post' }
+);
+
+onMounted(() => {
+  useScroll({
+    element: scrollElement.value,
+    onScrollEnd: () => {},
+  });
+});
+
 const handleWebSocketMessage = data => {
   if (data.type === socketTypeAlias.response.connected) return;
   const { _id, sender, content } = data.value;
   const targetUser = getTargetUserAvatar(sender);
-
   chatMessages.value.push({
     _id,
     avatar: targetUser.avatar,
@@ -124,6 +215,7 @@ const handleSubmit = event => {
     padding: 0 10px;
     flex: 1;
     background-color: #ebebeb;
+    overflow-y: auto;
   }
 
   .editor {

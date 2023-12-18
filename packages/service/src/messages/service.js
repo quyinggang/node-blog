@@ -21,6 +21,25 @@ const updateReadStatusByUserId = async data => {
   return model.bulkWrite(updates);
 };
 
+const getMessagesCountByUserId = async data => {
+  const { sender, receiver } = data;
+  const total = await model
+    .find({
+      $and: [
+        { type: socketTypeAlias.request.chat },
+        {
+          $or: [
+            { sender, receiver },
+            { sender: receiver, receiver: sender },
+          ],
+        },
+      ],
+    })
+    .count()
+    .exec();
+  return total;
+};
+
 const getMessagesByUserId = async data => {
   const { sender, receiver, page, size } = data;
   const list = await model
@@ -39,7 +58,22 @@ const getMessagesByUserId = async data => {
     .limit(size)
     .sort({ create_at: 1 })
     .exec();
-  return { list };
+
+  const total = await model
+    .find({
+      $and: [
+        { type: socketTypeAlias.request.chat },
+        {
+          $or: [
+            { sender, receiver },
+            { sender: receiver, receiver: sender },
+          ],
+        },
+      ],
+    })
+    .count()
+    .exec();
+  return { total, list };
 };
 
 const deleteMessagesByUserId = async data => {
@@ -66,4 +100,5 @@ export default {
   deleteMessagesByUserId,
   updateReadStatusByUserId,
   getMessagesByUserId,
+  getMessagesCountByUserId,
 };

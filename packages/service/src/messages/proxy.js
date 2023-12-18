@@ -62,10 +62,10 @@ const chatByWebSocket = async ctx => {
   webSocket.on('message', async message => {
     const { type, value } = JSON.parse(message.toString());
     if (type !== socketTypeAlias.request.chat) return;
-    await createChatMessage(value);
+    const result = await createChatMessage(value);
     const replyMessage = JSON.stringify({
       type: socketTypeAlias.response.message,
-      value,
+      value: result,
     });
     webSocket.send(replyMessage);
 

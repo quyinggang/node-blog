@@ -31,6 +31,19 @@ const list = {
   },
 };
 
+const count = {
+  query: {
+    sender: value => {
+      if (isEmpty(value)) return '用户ID不能为空';
+      if (!validator.isMongoId(value)) return '非法的用户ID';
+    },
+    receiver: value => {
+      if (isEmpty(value)) return '用户ID不能为空';
+      if (!validator.isMongoId(value)) return '非法的用户ID';
+    },
+  },
+};
+
 const read = {
   body: {
     sender: value => {
@@ -57,4 +70,4 @@ const deleteMessage = {
   },
 };
 
-export default { list, read, deleteMessage };
+export default { list, count, read, deleteMessage };

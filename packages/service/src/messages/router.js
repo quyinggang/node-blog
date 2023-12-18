@@ -5,6 +5,7 @@ import scheme from './scheme.js';
 
 const router = new Router();
 
+router.get('/count', validate(scheme.count), controller.getMessagesCount);
 router.get('/record', validate(scheme.list), controller.getMessages);
 router.put('/read', validate(scheme.read), controller.updateMessageReadStatus);
 router.post(
