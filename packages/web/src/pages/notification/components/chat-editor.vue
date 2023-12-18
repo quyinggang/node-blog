@@ -12,7 +12,7 @@
         ></chat-message>
       </li>
     </ul>
-    <div class="editor">
+    <div class="input-container">
       <a-textarea
         v-model="currentMessage"
         placeholder="Enter发送消息，Ctrl + Enter换行..."
@@ -56,21 +56,26 @@ const currentMessage = ref('');
 const chatMessages = ref([]);
 const endMessageId = ref();
 const page = ref(1);
+const loading = ref(false);
 const chatUser = toRef(() => props.chatUser || {});
 const loginUser = toRef(() => props.loginUser || {});
 const recordFetchVisible = computed(() => {
   const chatTarget = chatUser.value;
   const loginUserInfo = loginUser.value;
-  return chatTarget && loginUserInfo
-    ? chatTarget._id && loginUserInfo.uid
-    : false;
+  const result =
+    chatTarget && loginUserInfo ? chatTarget._id && loginUserInfo.uid : false;
+  return !!result;
 });
+const chatMessageLength = computed(() =>
+  Array.isArray(chatMessages.value) ? chatMessages.value.length : 0
+);
 
 watch(
   () => chatUser.value,
   () => {
     chatMessages.value = [];
     page.value = 1;
+    endMessageId.value = null;
   },
   { immediate: true }
 );
@@ -80,14 +85,13 @@ const getTargetUserAvatar = sender => {
   const chatTarget = chatUser.value;
   return sender === loginUserInfo.uid ? loginUserInfo : chatTarget;
 };
-const fetchHistoryChatRecordByPage = async (size = 10) => {
+const fetchHistoryChatRecordByPage = async (append = true) => {
   if (!recordFetchVisible.value) return;
-
   const params = {
     sender: loginUser.value.uid,
     receiver: chatUser.value._id,
     page: page.value,
-    size,
+    size: 10,
   };
   const result = await getChatMessagesList(params);
   const list = result.list || [];
@@ -100,7 +104,11 @@ const fetchHistoryChatRecordByPage = async (size = 10) => {
       avatar: user.avatar,
     };
   });
-  chatMessages.value.push(...record);
+  if (append) {
+    chatMessages.value.push(...record);
+  } else {
+    chatMessages.value.unshift(...record);
+  }
 };
 const fetchHistoryRecordTotal = async () => {
   if (!recordFetchVisible.value) return;
@@ -110,22 +118,25 @@ const fetchHistoryRecordTotal = async () => {
     receiver: chatUser.value._id,
   };
   const result = await getChatMessageTotalNumber(params);
-  fetchHistoryChatRecordByPage(result);
+  page.value = result ? Math.ceil(result / 10) : 1;
+  fetchHistoryChatRecordByPage();
 };
 
 watch(
-  () => recordFetchVisible.value,
+  () => recordFetchVisible.value && chatUser.value._id,
   value => {
     if (!value) return;
+    // 切换沟通用户后拉取总数计算出最后一页并拉取数据
     fetchHistoryRecordTotal();
   },
   { immediate: true }
 );
 
 watch(
-  () => Array.isArray(chatMessages.value) && chatMessages.value.length,
+  () => chatMessageLength.value,
   value => {
     if (!value) return;
+    // 应该定位找最早一个未阅读的message，这里简单处理找到最后一个元素添加锚点
     const messages = chatMessages.value;
     endMessageId.value = messages[messages.length - 1]._id;
   },
@@ -136,6 +147,7 @@ watch(
   () => endMessageId.value,
   value => {
     if (!value) return;
+    // 定位滚动到最后一个元素
     const element = document.querySelector('.anchor');
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
@@ -147,7 +159,17 @@ watch(
 onMounted(() => {
   useScroll({
     element: scrollElement.value,
-    onScrollEnd: () => {},
+    onScrollTop: async () => {
+      // 滚动到顶部加载历史数据
+      if (loading.value || page.value <= 1) return;
+      page.value -= 1;
+      loading.value = true;
+      try {
+        fetchHistoryChatRecordByPage(false);
+      } finally {
+        loading.value = false;
+      }
+    },
   });
 });
 
@@ -218,7 +240,7 @@ const handleSubmit = event => {
     overflow-y: auto;
   }
 
-  .editor {
+  .input-container {
     height: 100px;
     flex: none;
     border-top: 1px solid #e4e6eb;

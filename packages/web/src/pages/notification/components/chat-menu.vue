@@ -111,7 +111,7 @@ const handleDelete = (user, index) => {
     }
 
     .li {
-      padding: 5px 16px;
+      padding: 10px 16px;
       color: #252933;
 
       &:hover {
