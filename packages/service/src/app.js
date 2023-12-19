@@ -14,6 +14,7 @@ import logger from './config/logger.js';
 import redisToken from './middlewares/redisToken.js';
 import requestLog from './middlewares/requestLog.js';
 import errorHandler from './middlewares/errorHandler.js';
+import responseHandler from './middlewares/responseHandler.js';
 import pathTool from './utils/path.cjs';
 import socketKoa from './utils/socketKoa.js';
 
@@ -23,6 +24,8 @@ const app = socketKoa.proxy(new Koa());
 app.use(errorHandler());
 // 开启压缩
 app.use(compress());
+// 统一返回格式
+app.use(responseHandler());
 // 接口CORS配置
 app.use(cors());
 // 请求日志

@@ -1,4 +1,3 @@
-import { successHttpBody } from '../utils/common.js';
 import { cacheUploadFileIntoSet } from '../utils/redis.js';
 import NotificationProxy from '../notifications/proxy.js';
 import MessageProxy from '../messages/proxy.js';
@@ -7,7 +6,7 @@ const uploadFile = async ctx => {
   const file = ctx.request.files.file;
   const fileName = file.newFilename;
   await cacheUploadFileIntoSet(fileName);
-  ctx.body = { ...successHttpBody, data: fileName };
+  ctx.body = fileName;
 };
 
 const getUnreadCount = async ctx => {
@@ -16,14 +15,13 @@ const getUnreadCount = async ctx => {
     MessageProxy.getUnreadCountByUserId(uid),
     NotificationProxy.getUnreadCountByUserId(uid),
   ]);
-  const data = {
+  ctx.body = {
     total: notificationResult.total + messageResult.total,
     record: {
       ...messageResult.record,
       ...notificationResult.record,
     },
   };
-  ctx.body = { ...successHttpBody, data };
 };
 
 export default { uploadFile, getUnreadCount };
