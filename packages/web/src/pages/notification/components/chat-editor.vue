@@ -86,13 +86,14 @@ const getTargetUserAvatar = sender => {
   const chatTarget = chatUser.value;
   return sender === loginUserInfo.uid ? loginUserInfo : chatTarget;
 };
-const fetchHistoryChatRecordByPage = async (append = true) => {
+const fetchHistoryChatRecordByPage = async data => {
   if (!recordFetchVisible.value) return;
+  const { size = defaultSize, append = true } = data;
   const params = {
     sender: loginUser.value.uid,
     receiver: chatUser.value._id,
     page: page.value,
-    size: defaultSize,
+    size,
   };
   const result = await getChatMessagesList(params);
   const list = result.list || [];
@@ -119,8 +120,12 @@ const fetchHistoryRecordTotal = async () => {
     receiver: chatUser.value._id,
   };
   const result = await getChatMessageTotalNumber(params);
-  page.value = result ? Math.ceil(result / defaultSize) : 1;
-  fetchHistoryChatRecordByPage();
+  const lastPage = result ? Math.ceil(result / defaultSize) : 1;
+  const isExistManyMessage = lastPage > 2;
+  // 保证初始内容充满容器出现滚动条才可实现滚动到顶部加载历史数据的交互
+  page.value = isExistManyMessage ? lastPage - 2 : lastPage;
+  const initialSize = isExistManyMessage ? defaultSize * 2 : result;
+  fetchHistoryChatRecordByPage({ size: initialSize || defaultSize });
 };
 
 watch(
@@ -166,7 +171,7 @@ onMounted(() => {
       page.value -= 1;
       loading.value = true;
       try {
-        fetchHistoryChatRecordByPage(false);
+        fetchHistoryChatRecordByPage({ append: false });
       } finally {
         loading.value = false;
       }
@@ -235,7 +240,7 @@ const handleSubmit = event => {
   .ul {
     list-style: none;
     margin: 0;
-    padding: 0 10px;
+    padding: 20px 10px;
     flex: 1;
     background-color: #ebebeb;
     overflow-y: auto;
