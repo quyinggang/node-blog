@@ -11,6 +11,7 @@
         v-if="chatPanelVisible"
         :chat-user="chatUser"
         :login-user="userInfo"
+        @refresh="updateChatAllMessageRead"
       ></chat-editor>
       <a-empty v-else>
         <template #image>
@@ -68,7 +69,10 @@ const userSocket = useAuthWebSocket({
   ws: userWebSocketUrl,
   onMessage: handleUserListSocketMessage,
 });
-
+const sendMessageByUserSocket = message => {
+  if (!userSocket || userSocket.readyState !== WebSocket.OPEN) return;
+  userSocket.send(message);
+};
 watch(
   () => props.im && chatVisible.value,
   value => {
@@ -80,19 +84,18 @@ watch(
         receiver: props.im,
       },
     });
-    userSocket.send(message);
+    sendMessageByUserSocket(message);
   }
 );
 
 const fetchLatestUserList = () => {
-  if (!userSocket || userSocket.readyState !== WebSocket.OPEN) return;
   const message = JSON.stringify({
     type: socketTypeAlias.request.message,
     value: {
       sender: userInfo.value.uid,
     },
   });
-  userSocket.send(message);
+  sendMessageByUserSocket(message);
 };
 watch(
   () => chatVisible.value && (!userList.value || userList.value.length === 0),

@@ -1,3 +1,4 @@
+import { onBeforeUnmount } from 'vue';
 import { getRefreshToken } from '@/utils/auth';
 import { socketTypeAlias, jsonParse } from '@/utils/common';
 
@@ -21,5 +22,10 @@ export default function useAuthWebSocket(config) {
     return socket;
   };
 
-  return createWebSocket(config.ws, config.onMessage);
+  // 可靠的通信机制需要建立重连机制，实际上就是重新创建
+  const socket = createWebSocket(config.ws, config.onMessage);
+
+  onBeforeUnmount(() => socket.close());
+
+  return socket;
 }

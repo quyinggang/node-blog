@@ -35,6 +35,7 @@ import {
 } from '@/api/chat';
 import { socketTypeAlias } from '@/utils/common';
 import useScroll from '@/hook/useScroll';
+import { Message } from '@arco-design/web-vue';
 
 const props = defineProps({
   chatUser: {
@@ -50,6 +51,7 @@ const props = defineProps({
     },
   },
 });
+const emit = defineEmits(['refresh']);
 
 const defaultSize = 20;
 const scrollElement = ref();
@@ -183,6 +185,9 @@ const handleWebSocketMessage = data => {
   if (data.type === socketTypeAlias.response.connected) return;
   const { _id, sender, content } = data.value;
   const targetUser = getTargetUserAvatar(sender);
+
+  emit('refresh');
+
   chatMessages.value.push({
     _id,
     avatar: targetUser.avatar,
@@ -209,6 +214,7 @@ const handleSubmit = event => {
   currentMessage.value = '';
   if (!content) return;
   if (!chatSocket || chatSocket.readyState !== WebSocket.OPEN) {
+    Message.error('聊天连接存在问题，可刷新页面重新尝试！');
     currentMessage.value = content;
     return;
   }

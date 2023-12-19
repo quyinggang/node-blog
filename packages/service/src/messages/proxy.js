@@ -122,7 +122,7 @@ const getUserList = async uid => {
         .find({
           $and: [
             { type: socketTypeAlias.request.chat },
-            { $or: [{ sender: id }, { receiver: id }] },
+            { sender: id },
             { has_read: false },
           ],
         })
