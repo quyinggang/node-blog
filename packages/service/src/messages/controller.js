@@ -2,6 +2,7 @@ import service from './service.js';
 
 const updateMessageReadStatus = async ctx => {
   await service.updateReadStatusByUserId(ctx.request.body);
+  ctx.body = true;
 };
 
 const getMessages = async ctx => {
@@ -11,6 +12,7 @@ const getMessages = async ctx => {
 
 const deleteMessages = async ctx => {
   await service.deleteMessagesByUserId(ctx.request.body);
+  ctx.body = true;
 };
 
 const getMessagesCount = async ctx => {

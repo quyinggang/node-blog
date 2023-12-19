@@ -10,6 +10,7 @@ const getNotificationsByType = async ctx => {
 
 const updateReadStatus = async ctx => {
   await service.updateReadStatus(ctx.request.body);
+  ctx.body = true;
 };
 
 export default {

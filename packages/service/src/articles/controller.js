@@ -17,14 +17,17 @@ const getUserArticles = async ctx => {
 
 const publish = async ctx => {
   await service.createArticle(ctx.request.body);
+  ctx.body = true;
 };
 
 const saveDraft = async ctx => {
   await service.createDraft(ctx.request.body);
+  ctx.body = true;
 };
 
 const deleteArticle = async ctx => {
   await service.deleteArticleById(ctx.params.id);
+  ctx.body = true;
 };
 
 const getDrafts = async ctx => {
@@ -34,10 +37,12 @@ const getDrafts = async ctx => {
 
 const updateArticle = async ctx => {
   await service.updateArticleContent(ctx.params.id);
+  ctx.body = true;
 };
 
 const readArticle = async ctx => {
-  await service.updateArticleCount(ctx.params.id);
+  const data = await service.updateArticleCount(ctx.params.id);
+  ctx.body = data;
 };
 
 export default {

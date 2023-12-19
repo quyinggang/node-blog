@@ -5,10 +5,11 @@ import compress from 'koa-compress';
 import staticServe from 'koa-static';
 import mount from 'koa-mount';
 import jwt from 'koa-jwt';
+import rateLimit from 'koa-ratelimit';
 import './config/mongodb.js';
-import './config/redis.js';
+import limitConfig from './config/limit.js';
 import config from './config/config.js';
-import httpRouter from './config/router.js';
+import httpRouter from './config/httpRouter.js';
 import wsRouter from './config/wsRouter.js';
 import logger from './config/logger.js';
 import redisToken from './middlewares/redisToken.js';
@@ -20,6 +21,8 @@ import socketKoa from './utils/socketKoa.js';
 
 const app = socketKoa.proxy(new Koa());
 
+// 接口限流
+app.use(rateLimit(limitConfig));
 // 自定义错误信息，与全局错误error配合使用
 app.use(errorHandler());
 // 开启压缩

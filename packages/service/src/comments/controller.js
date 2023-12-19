@@ -12,10 +12,12 @@ const getCommentCount = async ctx => {
 
 const createComment = async ctx => {
   await service.createComment(ctx.request.body);
+  ctx.body = true;
 };
 
 const deleteComment = async ctx => {
   await service.deleteCommentById(ctx.params.id);
+  ctx.body = true;
 };
 
 export default { getComments, getCommentCount, createComment, deleteComment };

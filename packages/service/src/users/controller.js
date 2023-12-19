@@ -26,14 +26,17 @@ const getUserAllInfo = async ctx => {
 
 const logout = async ctx => {
   await service.logout(ctx.header);
+  ctx.body = true;
 };
 
 const follow = async ctx => {
   await service.follow(ctx.request.body);
+  ctx.body = true;
 };
 
 const cancelFollow = async ctx => {
   await service.cancelFollow(ctx.request.body);
+  ctx.body = true;
 };
 
 const refreshToken = async ctx => {
@@ -51,10 +54,12 @@ const updateProfile = async ctx => {
 
 const updatePassword = async ctx => {
   await service.updatePassword(ctx.request.body);
+  ctx.body = true;
 };
 
 const revokedAccount = async ctx => {
   await service.cancelAccount({ uid: ctx.params.id, header: ctx.header });
+  ctx.body = true;
 };
 
 const getUserRelation = async ctx => {
