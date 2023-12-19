@@ -116,6 +116,9 @@ const updateChatAllMessageRead = async () => {
   commonStore.setRefetchMessageCount(true);
 };
 const handleChatUserSelect = user => {
+  if (chatUser.value && user && chatUser.value._id === user._id) {
+    return;
+  }
   chatUser.value = user;
   updateChatAllMessageRead();
 };

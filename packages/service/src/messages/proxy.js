@@ -1,8 +1,11 @@
 import validator from 'validator';
+import EventEmitter from 'node:events';
 import model from './model.js';
 import socketKoa from '../utils/socketKoa.js';
 import { BusinessError } from '../utils/errors.js';
 import { getSocketClientKey, socketTypeAlias } from '../utils/common.js';
+
+const changeEventEmitter = new EventEmitter();
 
 /**
  * change stream需要mongodb数据库存在opLog，如果不存在需要配置复制集才能生效
@@ -14,7 +17,13 @@ import { getSocketClientKey, socketTypeAlias } from '../utils/common.js';
  * - 重启mongodb服务后，使用mongo shell登录数据库，执行rs.initiate()命令初始化复制集，因为只有一个节点，这个节点会变成Primary
  * - 使用命令rs.printReplicationInfo()查看opLog状态
  */
-const changeStream = model.watch();
+model.watch().on('change', changeData => {
+  if (changeData && changeData.operationType === 'insert') {
+    const { sender, receiver } = changeData.fullDocument;
+    const users = [sender.toString(), receiver.toString()];
+    changeEventEmitter.emit('user-change', users);
+  }
+});
 
 const getUnreadCountByUserId = async id => {
   const count = await model
@@ -56,9 +65,16 @@ const createChatMessage = async value => {
   return query;
 };
 
+const getCacheClientSocketFromMap = (url, uid) => {
+  const socketClientMap = socketKoa.getClientMap();
+  const clientKey = getSocketClientKey({ url, uid });
+  return socketClientMap.get(clientKey);
+};
+
 const chatByWebSocket = async ctx => {
   const url = ctx.url;
   const webSocket = ctx.webSocket;
+
   webSocket.on('message', async message => {
     const { type, value } = JSON.parse(message.toString());
     if (type !== socketTypeAlias.request.chat) return;
@@ -70,9 +86,7 @@ const chatByWebSocket = async ctx => {
     webSocket.send(replyMessage);
 
     // 查找对应的用户的socket连接是否存在，存在的话就直接发送消息
-    const socketClientMap = socketKoa.getClientMap();
-    const clientKey = getSocketClientKey({ url, uid: value.receiver });
-    const targetClientSocket = socketClientMap.get(clientKey);
+    const targetClientSocket = getCacheClientSocketFromMap(url, value.receiver);
     targetClientSocket && targetClientSocket.send(replyMessage);
   });
 };
@@ -141,13 +155,18 @@ const responseUserConnection = async data => {
 };
 
 const userConnectByWebSocket = async ctx => {
+  const url = ctx.url;
   const webSocket = ctx.webSocket;
 
-  changeStream.on('change', changeData => {
-    if (changeData && changeData.operationType === 'insert') {
-      const sender = changeData.fullDocument.sender.toString();
-      sendUserListInfo(webSocket, sender);
-    }
+  // 保存所有的user WebSocket连接只会存在一个user-change监听，避免多次注册
+  changeEventEmitter.removeAllListeners('user-change');
+  // 广播正在通信的双方更新用户列表信息状态包括未读信息数量
+  changeEventEmitter.on('user-change', data => {
+    const users = data || [];
+    users.forEach(user => {
+      const targetSocket = getCacheClientSocketFromMap(url, user);
+      targetSocket && sendUserListInfo(targetSocket, user);
+    });
   });
 
   webSocket.on('message', async message => {

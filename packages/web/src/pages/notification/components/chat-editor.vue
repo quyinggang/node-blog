@@ -51,6 +51,7 @@ const props = defineProps({
   },
 });
 
+const defaultSize = 20;
 const scrollElement = ref();
 const currentMessage = ref('');
 const chatMessages = ref([]);
@@ -91,7 +92,7 @@ const fetchHistoryChatRecordByPage = async (append = true) => {
     sender: loginUser.value.uid,
     receiver: chatUser.value._id,
     page: page.value,
-    size: 10,
+    size: defaultSize,
   };
   const result = await getChatMessagesList(params);
   const list = result.list || [];
@@ -118,7 +119,7 @@ const fetchHistoryRecordTotal = async () => {
     receiver: chatUser.value._id,
   };
   const result = await getChatMessageTotalNumber(params);
-  page.value = result ? Math.ceil(result / 10) : 1;
+  page.value = result ? Math.ceil(result / defaultSize) : 1;
   fetchHistoryChatRecordByPage();
 };
 
