@@ -21,6 +21,7 @@
       :value="article"
       :plugins="editorConfig.plugins"
       placeholder="正文..."
+      :upload-images="handleUpload"
       @change="handleContentChange"
     ></editor>
   </section>
@@ -40,6 +41,7 @@ import { Message } from '@arco-design/web-vue';
 import AvatarUser from './components/avatar.vue';
 import editorConfig from '@/config/editor';
 import { Editor } from '@bytemd/vue-next';
+import { uploadFile } from '@/api/common';
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -97,6 +99,11 @@ const handlePublish = async () => {
     : () => createArticle(params);
   await api();
   Message.success('文章发布成功');
+};
+const handleUpload = async files => {
+  if (!Array.isArray(files) || files.length === 0) return;
+  const result = await uploadFile({ file: files, isCache: false });
+  console.log(result);
 };
 </script>
 
