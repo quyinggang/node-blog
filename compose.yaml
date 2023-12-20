@@ -1,0 +1,17 @@
+services:
+  redis:
+    image: redis:7.2.2
+    ports:
+      - "0.0.0.0:6379:6379"
+    environment:
+      - REDIS_PASSWORD=123456
+    volumes:
+      - .dblocal/redis/data:/data
+    command: redis-server /etc/redis/redis.conf
+  mongodb:
+    image: mongo:4.4.22
+    ports:
+      - "0.0.0.0:27017:27017"
+    volumes:
+      - .dblocal/mongodb/data:/data/db
+    command: mongod --bind_ip 0.0.0.0 --port 27017 --dbpath /data/db

@@ -1,7 +1,7 @@
 const config = {
   db: {
-    mongodb: 'mongodb://127.0.0.1:27017/test',
-    redis: 'redis://default:123456@127.0.0.1:6379/0',
+    mongodb: 'mongodb://0.0.0.0:27017/test',
+    redis: 'redis://default:123456@0.0.0.0:6379/0',
   },
   token: {
     secret: 'node-project@www.localhost.me@2023&10',
