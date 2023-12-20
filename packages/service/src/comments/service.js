@@ -12,8 +12,8 @@ const getCommentReplyUser = async id => {
   return comment.user.toString();
 };
 
-const getCommentCountByTopicId = async query => {
-  const { topicId } = query;
+const getCommentCountByTopicId = async data => {
+  const { topicId } = data;
   return model.find({ 'topic.id': topicId }).count().exec();
 };
 
@@ -111,13 +111,21 @@ const createComment = async data => {
   return comment;
 };
 
-const deleteComment = async id => {
-  return model.findByIdAndRemove(id).exec();
+const deleteCommentById = async id => {
+  const list = await model
+    .find({
+      $or: [{ _id: id }, { root_comment_id: id }, { parent_comment_id: id }],
+    })
+    .exec();
+  const deletes = list.map(item => {
+    return { deleteOne: { filter: { _id: item._id } } };
+  });
+  return model.bulkWrite(deletes);
 };
 
 export default {
   getCommentCountByTopicId,
   getCommentsByTopicId,
   createComment,
-  deleteComment,
+  deleteCommentById,
 };

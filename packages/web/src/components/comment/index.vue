@@ -22,6 +22,7 @@
         :logged-in="loggedIn"
         @login="handleLogin"
         @reply="handleCommentCreate"
+        @delete="handleCommentDelete"
       ></comment-item>
       <div v-if="item.replies && item.replies.length">
         <template v-for="child of item.replies" :key="child._id">
@@ -32,6 +33,7 @@
             :logged-in="loggedIn"
             @login="handleLogin"
             @reply="handleCommentCreate"
+            @delete="handleCommentDelete"
           ></comment-item>
         </template>
       </div>
@@ -45,7 +47,7 @@ import CommentInput from './input.vue';
 import CommentItem from './list-item.vue';
 import UserAvatar from '@/components/user-avatar/index.vue';
 import { useCommonStore, useUserStore } from '@/store';
-import { getComments, createComment } from '@/api/comment';
+import { getComments, createComment, deleteComment } from '@/api/comment';
 import useScrollPageRequest from '@/hook/useScrollPageRequest';
 
 const props = defineProps({
@@ -114,6 +116,11 @@ const handleCommentCreate = async data => {
   const inputComInstance = inputInstance.value;
   if (!inputComInstance) return;
   inputComInstance.clearInput();
+  emit('success');
+};
+const handleCommentDelete = async id => {
+  await deleteComment(id);
+  fetchComments({ page: 1, size: props.preview ? 2 : 10 });
   emit('success');
 };
 </script>

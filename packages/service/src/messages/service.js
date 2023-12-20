@@ -5,18 +5,16 @@ const updateReadStatusByUserId = async data => {
   const { sender, receiver } = data;
   const messages = await model
     .find({
-      $and: [
-        {
-          $or: [
-            { sender, receiver },
-            { sender: receiver, receiver: sender },
-          ],
-        },
+      $or: [
+        { sender, receiver },
+        { sender: receiver, receiver: sender },
       ],
     })
     .exec();
-  const updates = messages.map(id => {
-    return { updateOne: { filter: { _id: id }, update: { has_read: true } } };
+  const updates = messages.map(item => {
+    return {
+      updateOne: { filter: { _id: item._id }, update: { has_read: true } },
+    };
   });
   return model.bulkWrite(updates);
 };
@@ -80,13 +78,9 @@ const deleteMessagesByUserId = async data => {
   const { sender, receiver } = data;
   const messages = await model
     .find({
-      $and: [
-        {
-          $or: [
-            { sender, receiver },
-            { sender: receiver, receiver: sender },
-          ],
-        },
+      $or: [
+        { sender, receiver },
+        { sender: receiver, receiver: sender },
       ],
     })
     .exec();

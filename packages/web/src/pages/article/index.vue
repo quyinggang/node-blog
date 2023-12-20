@@ -17,7 +17,7 @@
         <h3>评论 {{ commentTotal }}</h3>
         <comment
           :topic-id="articleId"
-          @success="handleCommentSuccess"
+          @success="handleCommentTotalRefetch"
         ></comment>
         <a-button
           v-show="commentTotal"
@@ -96,7 +96,7 @@ const handleUserRoute = () => {
 const handleCommentView = () => {
   commentDrawerVisible.value = true;
 };
-const handleCommentSuccess = async () => {
+const handleCommentTotalRefetch = async () => {
   const data = await getCommentCount({ topicId: articleId });
   commentTotal.value = data || 0;
 };

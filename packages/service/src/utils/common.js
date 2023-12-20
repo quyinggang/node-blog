@@ -2,8 +2,6 @@ import crypto from 'node:crypto';
 import jsonwebtoken from 'jsonwebtoken';
 import config from '../config/config.js';
 
-export const successHttpBody = { code: 20000, message: 'success', data: true };
-
 export const getStaticResourceUrl = value => `/static/${value}`;
 
 // 类型校验相关

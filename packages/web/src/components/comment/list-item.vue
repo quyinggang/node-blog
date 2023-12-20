@@ -33,7 +33,12 @@
         </li>
         <li class="actions">
           <span class="time">{{ commentInfo.createTime }}</span>
-          <span class="icon" @click="handleActionReply"><icon-message /> </span>
+          <span class="icon" @click.stop="handleActionReply"
+            ><icon-message />
+          </span>
+          <span v-if="deleteVisible" class="icon" @click.stop="handleDelete"
+            ><icon-delete></icon-delete
+          ></span>
         </li>
       </ul>
     </div>
@@ -54,7 +59,8 @@ import { ref, computed, nextTick } from 'vue';
 import dayjs from 'dayjs';
 import ReplyInput from './input.vue';
 import UserAvatar from '@/components/user-avatar/index.vue';
-import { IconMessage } from '@arco-design/icon-vue';
+import { Modal } from '@arco-design/web-vue';
+import { IconMessage, IconDelete } from '@arco-design/icon-vue';
 
 const props = defineProps({
   comment: {
@@ -76,7 +82,7 @@ const props = defineProps({
     default: '',
   },
 });
-const emit = defineEmits(['login', 'reply']);
+const emit = defineEmits(['login', 'reply', 'delete']);
 const inputInstance = ref();
 const inputVisible = ref(false);
 const commentInfo = computed(() => {
@@ -94,7 +100,29 @@ const commentInfo = computed(() => {
 });
 const userLoggedIn = computed(() => props.loggedIn);
 const placeholder = computed(() => `回复 ${commentInfo.value.author.name}`);
+const deleteVisible = computed(() => {
+  const userId = props.userId;
+  const { author } = commentInfo.value;
+  return userId && author ? userId === author._id : false;
+});
 
+const handleDelete = () => {
+  if (!userLoggedIn.value) {
+    emit('login');
+    return;
+  }
+  const commentId = commentInfo.value._id;
+  if (!commentId) return;
+  Modal.confirm({
+    title: '重要提示',
+    content: '删除评论后所有子评论都将删除，确认删除吗？',
+    bodyStyle: 'text-align:center',
+    okText: '确认',
+    onOk: async () => {
+      emit('delete', commentId);
+    },
+  });
+};
 const handleActionReply = () => {
   if (!userLoggedIn.value) {
     emit('login');

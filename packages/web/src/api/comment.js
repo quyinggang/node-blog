@@ -10,3 +10,6 @@ export const getComments = params =>
 
 export const getCommentCount = params =>
   request({ prefix, method: 'get', url: '/public/count', params });
+
+export const deleteComment = id =>
+  request({ prefix, method: 'delete', url: `/${id}` });

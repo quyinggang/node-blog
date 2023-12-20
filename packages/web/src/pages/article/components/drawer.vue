@@ -11,6 +11,7 @@
       v-if="drawerVisible"
       :preview="false"
       :topic-id="articleId"
+      @success="fetchCommentTotal"
     ></comment>
   </a-drawer>
 </template>
@@ -44,12 +45,18 @@ const drawerVisible = computed({
   },
 });
 
+const fetchCommentTotal = async () => {
+  const topicId = articleId.value;
+  if (!topicId) return;
+  const data = await getCommentCount({ topicId });
+  commentCount.value = data;
+};
+
 watch(
   () => drawerVisible.value && articleId.value,
   async value => {
     if (!value) return;
-    const data = await getCommentCount({ topicId: articleId.value });
-    commentCount.value = data;
+    fetchCommentTotal();
   }
 );
 
