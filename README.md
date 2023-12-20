@@ -21,4 +21,4 @@
     - 文章评论：实践文章以及评论系统的功能设计
     - 消息通知
     - 聊天私信：应用 WebSocket、Mongodb Change Stream机制
-    - docker构建整体环境
+    - docker compose的基本应用：安装redis和mongodb 镜像供本地环境而无需本机一一安装
