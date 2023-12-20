@@ -41,7 +41,7 @@ import { Message } from '@arco-design/web-vue';
 import AvatarUser from './components/avatar.vue';
 import editorConfig from '@/config/editor';
 import { Editor } from '@bytemd/vue-next';
-import { uploadFile } from '@/api/common';
+import { uploadFiles } from '@/api/common';
 
 const route = useRoute();
 const userStore = useUserStore();
@@ -102,8 +102,10 @@ const handlePublish = async () => {
 };
 const handleUpload = async files => {
   if (!Array.isArray(files) || files.length === 0) return;
-  const result = await uploadFile({ file: files, isCache: false });
-  console.log(result);
+  const formData = new FormData();
+  files.forEach(file => formData.append('file', file));
+  const result = await uploadFiles(formData);
+  return Array.isArray(result) ? result : [result];
 };
 </script>
 

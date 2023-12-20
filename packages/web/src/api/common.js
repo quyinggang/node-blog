@@ -2,7 +2,7 @@ import request from '@/config/request';
 
 const prefix = '/common';
 
-export const uploadFile = data =>
+export const uploadFiles = data =>
   request({
     prefix,
     method: 'post',

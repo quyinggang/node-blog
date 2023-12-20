@@ -1,12 +1,17 @@
-import { cacheUploadFileIntoSet } from '../utils/redis.js';
 import NotificationProxy from '../notifications/proxy.js';
 import MessageProxy from '../messages/proxy.js';
+import { getStaticResourceUrl } from '../utils/common.js';
 
 const uploadFile = async ctx => {
   const file = ctx.request.files.file;
-  const fileName = file.newFilename;
-  await cacheUploadFileIntoSet(fileName);
-  ctx.body = fileName;
+  const files = Array.isArray(file) ? [...file] : [file];
+  ctx.body = files.map(item => {
+    if (!item) return;
+    return {
+      name: item.originalFilename,
+      url: getStaticResourceUrl(item.newFilename),
+    };
+  });
 };
 
 const getUnreadCount = async ctx => {
