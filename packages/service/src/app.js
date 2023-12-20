@@ -18,21 +18,24 @@ import errorHandler from './middlewares/errorHandler.js';
 import responseHandler from './middlewares/responseHandler.js';
 import pathTool from './utils/path.cjs';
 import socketKoa from './utils/socketKoa.js';
+import swagger from './config/swagger.js';
 
 const app = socketKoa.proxy(new Koa());
 
 // 接口限流
 app.use(rateLimit(limitConfig));
+// 接口文档
+app.use(swagger);
 // 自定义错误信息，与全局错误error配合使用
 app.use(errorHandler());
+// 请求日志
+app.use(requestLog());
 // 开启压缩
 app.use(compress());
 // 统一返回格式
 app.use(responseHandler());
 // 接口CORS配置
 app.use(cors());
-// 请求日志
-app.use(requestLog());
 // token校验
 app.use(
   jwt({ secret: config.token.secret }).unless({ path: config.api.whiteRecord })

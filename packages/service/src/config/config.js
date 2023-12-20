@@ -10,7 +10,7 @@ const config = {
   },
   hashSalt: 'me@14.06',
   api: {
-    whiteRecord: [/\/public\//, /^\/static/],
+    whiteRecord: [/\/public\//, /^\/static/, /^\/swagger/],
   },
 };
 

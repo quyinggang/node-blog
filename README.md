@@ -16,7 +16,7 @@
   - 技术栈：Koa + mongodb + redis
   - 知识点：
     - node 项目结构实践、中间件实践、全局统一的错误处理机制
-    - 接口 CORS、XSS 处理、接口参数校验、gzip 压缩、接口限流、API文档
+    - 接口 CORS、XSS 处理、接口参数校验、gzip 压缩、接口限流、API接口文档
     - 登录验证：JWT、Redis Token 黑名单机制、双 Token 优化机制
     - 文章评论：实践文章以及评论系统的功能设计
     - 消息通知

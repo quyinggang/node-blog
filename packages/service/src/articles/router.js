@@ -5,7 +5,30 @@ import scheme from './scheme.js';
 
 const router = new Router();
 
+/**
+ * @swagger
+ * /api/articles/public/list:
+ *    get:
+ *      description: 分页获取文章列表
+ *      tags: [文章模块API]
+ *      parameters:
+ *        - name: page
+ *          description: 页数
+ *          in: query
+ *          type: number
+ *          required: true
+ *        - name: size
+ *          description: 页条数
+ *          in: query
+ *          type: number
+ *          required: true
+ *      responses:
+ *        200:
+ *          description: 成功
+ *
+ */
 router.get('/public/list', validate(scheme.list), controller.getList);
+
 router.get('/public/:id', validate(scheme.article), controller.getArticle);
 router.get(
   '/public/user/:id',

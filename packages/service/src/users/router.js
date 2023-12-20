@@ -20,6 +20,24 @@ router.post(
   controller.uploadAvatarFile
 );
 
+/**
+ * @swagger
+ * /api/users/info:
+ *    get:
+ *      description: 依据token获取用户基本信息
+ *      tags: [用户模块API]
+ *      parameters:
+ *        - name: Authorization
+ *          description: Bearer token authentication
+ *          in: header
+ *          required: true
+ *      security:
+ *        - jwtAuth: []
+ *      responses:
+ *        200:
+ *          description: 成功
+ *
+ */
 router.get('/info', controller.getBasicInfoByToken);
 router.get(
   '/public/follower',
