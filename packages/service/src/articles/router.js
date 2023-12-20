@@ -5,6 +5,7 @@ import scheme from './scheme.js';
 
 const router = new Router();
 
+// 接口参数校验以及API接口文档生成有其他包可以组合使用，这里由于是学习所以参数校验自己写的，推荐koa相关中间件处理
 /**
  * @swagger
  * /api/articles/public/list:
