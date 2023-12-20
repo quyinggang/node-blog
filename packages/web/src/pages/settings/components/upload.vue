@@ -18,7 +18,7 @@
 <script setup>
 import { computed, ref } from 'vue';
 import { Message } from '@arco-design/web-vue';
-import { uploadFile } from '@/api/common';
+import { uploadAvatarImage } from '@/api/user';
 
 const emit = defineEmits(['update:modelValue']);
 
@@ -46,7 +46,7 @@ const uploadChange = (_, currentFile) => {
 };
 const handleUpload = async option => {
   const fileItem = option.fileItem;
-  const fileName = await uploadFile({ file: fileItem.file });
+  const fileName = await uploadAvatarImage({ file: fileItem.file });
   emit('update:modelValue', fileName);
 };
 </script>

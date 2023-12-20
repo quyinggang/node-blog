@@ -1,5 +1,13 @@
 import service from './service.js';
 import { getTokenFromRequestHeader, verifyToken } from '../utils/common.js';
+import { cacheUploadFileIntoSet } from '../utils/redis.js';
+
+const uploadAvatarFile = async ctx => {
+  const file = ctx.request.files.file;
+  const fileName = file.newFilename;
+  await cacheUploadFileIntoSet(fileName);
+  ctx.body = fileName;
+};
 
 const login = async ctx => {
   const { accessToken, refreshToken, user } = await service.login(
@@ -95,4 +103,5 @@ export default {
   updateProfile,
   updatePassword,
   revokedAccount,
+  uploadAvatarFile,
 };

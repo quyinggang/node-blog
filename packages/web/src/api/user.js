@@ -52,3 +52,12 @@ export const resetPassword = data =>
 // 注销账户
 export const cancelAccount = uid =>
   request({ prefix, method: 'delete', url: `/${uid}` });
+
+export const uploadAvatarImage = data =>
+  request({
+    prefix,
+    method: 'post',
+    url: '/avatar/upload',
+    data,
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });

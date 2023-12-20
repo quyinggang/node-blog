@@ -1,9 +1,24 @@
 import Router from '@koa/router';
+import { koaBody } from 'koa-body';
 import validate from '../middlewares/validation.js';
 import controller from './controller.js';
 import scheme from './scheme.js';
+import pathTool from '../utils/path.cjs';
 
 const router = new Router();
+
+router.post(
+  '/avatar/upload',
+  koaBody({
+    multipart: true,
+    formidable: {
+      keepExtensions: true,
+      maxFieldsSize: 5 * 1024 * 1024,
+      uploadDir: pathTool.getStaticPath(),
+    },
+  }),
+  controller.uploadAvatarFile
+);
 
 router.get('/info', controller.getBasicInfoByToken);
 router.get(
