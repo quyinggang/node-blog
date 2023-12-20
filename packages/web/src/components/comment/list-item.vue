@@ -1,9 +1,11 @@
 <template>
   <div>
     <div class="list-box">
-      <a-avatar class="user" :size="40">
-        <img alt="avatar" :src="commentInfo.author.avatar" loading="lazy" />
-      </a-avatar>
+      <user-avatar
+        class="user"
+        :avatar="commentInfo.author.avatar"
+        :size="40"
+      ></user-avatar>
       <ul class="ul">
         <li class="title">
           <div class="name">
@@ -51,6 +53,7 @@
 import { ref, computed, nextTick } from 'vue';
 import dayjs from 'dayjs';
 import ReplyInput from './input.vue';
+import UserAvatar from '@/components/user-avatar/index.vue';
 import { IconMessage } from '@arco-design/icon-vue';
 
 const props = defineProps({

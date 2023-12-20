@@ -1,12 +1,11 @@
 <template>
   <ul class="author-container">
     <li>
-      <a-avatar v-if="author.avatar" class="user" :size="50">
-        <img :src="author.avatar" alt="avatar" />
-      </a-avatar>
-      <a-avatar v-else class="user" :size="50">
-        <icon-user></icon-user>
-      </a-avatar>
+      <user-avatar
+        class="user"
+        :avatar="author.avatar"
+        :size="50"
+      ></user-avatar>
       <strong class="name">{{ author.name }}</strong>
     </li>
     <li>
@@ -35,9 +34,9 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue';
-import { IconUser } from '@arco-design/icon-vue';
 import { useUserStore } from '@/store';
 import { getUserAllInfo } from '@/api/user';
+import UserAvatar from '@/components/user-avatar/index.vue';
 import FollowAction from '@/components/follow-action/index.vue';
 
 const props = defineProps({

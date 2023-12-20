@@ -1,8 +1,6 @@
 <template>
   <div :class="messageClass">
-    <a-avatar class="user" :size="36">
-      <img alt="avatar" :src="message.avatar" loading="lazy" />
-    </a-avatar>
+    <user-avatar class="user" :avatar="message.avatar" :size="36"></user-avatar>
     <div class="content">
       {{ message.content }}
     </div>
@@ -11,6 +9,7 @@
 
 <script setup>
 import { toRef, computed } from 'vue';
+import UserAvatar from '@/components/user-avatar/index.vue';
 
 const props = defineProps({
   userId: {

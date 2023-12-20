@@ -1,14 +1,11 @@
 <template>
   <div ref="commentBoxElement" :class="boxClassList">
     <div class="flex">
-      <a-avatar class="user" :size="40">
-        <img
-          v-show="loggedIn"
-          alt="avatar"
-          :src="userInfo.avatar"
-          loading="lazy"
-        />
-      </a-avatar>
+      <user-avatar
+        class="user"
+        :avatar="userInfo.avatar"
+        :size="40"
+      ></user-avatar>
       <comment-input
         ref="inputInstance"
         :user="userInfo"
@@ -46,6 +43,7 @@
 import { computed, onMounted, ref } from 'vue';
 import CommentInput from './input.vue';
 import CommentItem from './list-item.vue';
+import UserAvatar from '@/components/user-avatar/index.vue';
 import { useCommonStore, useUserStore } from '@/store';
 import { getComments, createComment } from '@/api/comment';
 import useScrollPageRequest from '@/hook/useScrollPageRequest';

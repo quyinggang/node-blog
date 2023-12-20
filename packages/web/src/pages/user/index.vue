@@ -2,14 +2,11 @@
   <div class="container">
     <div class="left">
       <div class="user-info">
-        <a-avatar class="avatar" :size="90">
-          <img
-            class="image"
-            alt="avatar"
-            :src="userInfo.avatar"
-            loading="lazy"
-          />
-        </a-avatar>
+        <user-avatar
+          class="avatar"
+          :avatar="userInfo.avatar"
+          :size="90"
+        ></user-avatar>
         <a-space direction="vertical" size="large">
           <strong class="name">{{ userInfo.name }}</strong>
           <follow-action
@@ -60,6 +57,7 @@ import FollowAction from '@/components/follow-action/index.vue';
 import ArticleList from '@/components/article-list/index.vue';
 import FollowingList from './components/following-list.vue';
 import FollowerList from './components/follower-list.vue';
+import UserAvatar from '@/components/user-avatar/index.vue';
 
 const route = useRoute();
 const userStore = useUserStore();

@@ -1,8 +1,10 @@
 <template>
   <a-dropdown position="br" trigger="click">
-    <a-avatar class="user" :size="36">
-      <img class="image" alt="avatar" :src="userInfo.avatar" loading="lazy" />
-    </a-avatar>
+    <user-avatar
+      class="user"
+      :avatar="userInfo.avatar"
+      :size="36"
+    ></user-avatar>
     <template #content>
       <a-doption>
         <router-link :to="{ name: 'user', params: { id: userInfo.uid } }">
@@ -29,6 +31,7 @@ import { computed } from 'vue';
 import { useUserStore } from '@/store';
 import { getUserBaseInfo } from '@/api/user';
 import { IconUser, IconArchive } from '@arco-design/icon-vue';
+import UserAvatar from '@/components/user-avatar/index.vue';
 
 const userStore = useUserStore();
 const userInfo = computed(() => userStore.userInfo || {});

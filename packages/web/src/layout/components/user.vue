@@ -1,8 +1,10 @@
 <template>
   <a-dropdown position="br" trigger="click">
-    <a-avatar class="user" :size="36">
-      <img class="image" alt="avatar" :src="userInfo.avatar" loading="lazy" />
-    </a-avatar>
+    <user-avatar
+      class="user"
+      :avatar="userInfo.avatar"
+      :size="36"
+    ></user-avatar>
     <template #content>
       <a-doption>
         <router-link :to="{ name: 'user', params: { id: userInfo.uid } }">
@@ -31,9 +33,10 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { Modal } from '@arco-design/web-vue';
 import { IconUser, IconExport, IconSettings } from '@arco-design/icon-vue';
-import { computed } from 'vue';
+import UserAvatar from '@/components/user-avatar/index.vue';
 
 const props = defineProps({
   user: {

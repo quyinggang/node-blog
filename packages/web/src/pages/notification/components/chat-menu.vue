@@ -14,9 +14,11 @@
         >
           <div class="flex">
             <a-space>
-              <a-avatar class="user" :size="28">
-                <img alt="avatar" :src="user.avatar" loading="lazy" />
-              </a-avatar>
+              <user-avatar
+                class="user"
+                :avatar="user.avatar"
+                :size="28"
+              ></user-avatar>
               <a-space direction="vertical" size="large">
                 <strong class="name">{{ user.name }}</strong>
               </a-space>
@@ -41,6 +43,7 @@
 import { toRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { Modal } from '@arco-design/web-vue';
+import UserAvatar from '@/components/user-avatar/index.vue';
 
 const props = defineProps({
   users: {
